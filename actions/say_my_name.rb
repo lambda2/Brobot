@@ -7,7 +7,4 @@ module Action
       channel.send_text "Hey #{user.name}, #{message_text} toi même !"
     end
   end
-
-
-  @@actions << SayMyName
 end
