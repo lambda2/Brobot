@@ -4,6 +4,8 @@ require "net/https"
 require "uri"
 require "slack_client"
 
+require "./actions/action"
+
 class Brobot < SlackClient::Client
 
   # Si on veut faire des adapters plus tard...
@@ -15,29 +17,42 @@ class Brobot < SlackClient::Client
 
   def initialize(params = {})
     super(params[:slack_token])
+    @actions = Action.actions.map { |e| e.new(self) }
   end
 
   def onOpen data
-    print "[BROBOT] _onOpen !"
+    puts "[BROBOT] _onOpen !"
+    puts @self.id
   end
 
   def onMessage message
-    print "[BROBOT] _onMessage #{message}"
+    return if message["channel"] == "general"
+    puts "[BROBOT] _onMessage #{message.inspect}"
     case message["type"]
-    when "hello"
-      channel = getChannelGroupOrDMByName "battlefield"
+    # when "hello"
+      # channel = getChannelGroupOrDMByName "battlefield"
       # p channel
-      channel.send_text "Hello world !"
+      # channel.send_text "Hello world !"
 
     when "message"
-      channel = getChannelGroupOrDMByName "battlefield"
-      user = getUserByID(message["user"])
+      if talking_to_me? message["text"]
+        channel = getChannelGroupOrDMByID(message["channel"])
+        user = getUserByID(message["user"])
+        @actions.each{|a| a.process!(message["text"].gsub("<@#{@self.id}>:", ""), user, channel)}
+      end
+      # channel = getChannelGroupOrDMByName "battlefield"
       # p channel
-      channel.send_text "Hello #{user.name} !"
+      # channel.send_text "Hello #{user.name} !"
     end
   end
 
   def onError error
-    print "[BROBOT] _onError #{error}"
+    puts "[BROBOT] _onError #{error}"
+  end
+
+  private
+
+  def talking_to_me? message_text
+    message_text["<@#{@self.id}>"]
   end
 end
