@@ -21,13 +21,13 @@ class Brobot < SlackClient::Client
   end
 
   def onOpen data
-    puts "[BROBOT] _onOpen !"
+    # puts "[BROBOT] _onOpen !"
     puts @self.id
   end
 
   def onMessage message
     return if message["channel"] == "general"
-    puts "[BROBOT] _onMessage #{message.inspect}"
+    # puts "[BROBOT] _onMessage #{message.inspect}"
     case message["type"]
     # when "hello"
       # channel = getChannelGroupOrDMByName "battlefield"
@@ -47,7 +47,7 @@ class Brobot < SlackClient::Client
   end
 
   def onError error
-    puts "[BROBOT] _onError #{error}"
+    # puts "[BROBOT] _onError #{error}"
   end
 
   private
