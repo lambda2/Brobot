@@ -3,6 +3,7 @@
 require "./adapters/adapter"
 require "slack_client"
 
+# Finalement, je sais pas si useful
 class SlackAdapter < Adapter
 
   class SlackClientAdapter < SlackClient::Client
